@@ -1,0 +1,2 @@
+# Kept so release CI has a directory to copy wipskin_native.pyd / .so into.
+# The binary itself is built in CI and is not committed.

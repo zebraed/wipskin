@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<deformerWeight>
+  <deformer name="body_skinCluster">
+    <attribute name="skinningMethod" value="0"/>
+    <attribute name="normalizeWeights" value="1"/>
+    <attribute name="maxInfluences" value="4"/>
+  </deformer>
+  <shape name="body_geoShape" size="3" max="3"/>
+  <weights source="joint_1" shape="body_geoShape">
+    <point index="0" value="1.0"/>
+    <point index="1" value="1.0"/>
+    <point index="2" value="1.0"/>
+  </weights>
+  <weights source="joint_2" shape="body_geoShape">
+    <point index="0" value="0.5"/>
+  </weights>
+</deformerWeight>

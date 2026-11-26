@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<deformerWeight>
+  <deformer>
+    <attribute name="skinningMethod" value="0"/>
+  </deformer>
+  <shape name="body_geoShape" size="1" max="1"/>
+  <weights deformer="body_skinCluster" source="joint_1" shape="body_geoShape">
+    <point index="0" value="1.0"/>
+  </weights>
+</deformerWeight>

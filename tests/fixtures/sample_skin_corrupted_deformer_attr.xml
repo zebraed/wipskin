@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Reproduce a corrupt export where non-skin weights claim the skinCluster
+     deformer name. Document order matches Maya output (weights follow each
+     deformer element). -->
+<deformerWeight>
+  <headerInfo fileName="body.xml"/>
+  <deformer name="body_skinCluster" type="skinCluster">
+    <attribute name="skinningMethod" value="0"/>
+    <attribute name="normalizeWeights" value="1"/>
+    <attribute name="maxInfluences" value="1"/>
+  </deformer>
+  <shape name="body_geoShape" size="3" max="3"/>
+  <weights deformer="body_skinCluster" source="joint_1" shape="body_geoShape" layer="0">
+    <point index="0" value="1.0"/>
+    <point index="1" value="1.0"/>
+    <point index="2" value="1.0"/>
+  </weights>
+  <deformer name="bodySq_bend" type="nonLinear"/>
+  <deformer name="body_blendShape" type="blendShape"/>
+  <weights deformer="body_skinCluster" source="headSquash_setup" shape="body_geoShape" layer="0">
+    <point index="0" value="1.0"/>
+    <point index="1" value="1.0"/>
+    <point index="2" value="1.0"/>
+  </weights>
+  <weights deformer="body_skinCluster" source="mouthOpenH" shape="body_geoShape" layer="1">
+    <point index="0" value="1.0"/>
+    <point index="1" value="1.0"/>
+    <point index="2" value="1.0"/>
+  </weights>
+</deformerWeight>

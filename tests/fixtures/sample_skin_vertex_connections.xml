@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<deformerWeight>
+  <headerInfo fileName="fmt_vc.xml" worldMatrix="5.950465 0.000000 0.000000 0.000000 0.000000 5.950465 0.000000 0.000000 0.000000 0.000000 5.950465 0.000000 0.000000 0.000000 0.000000 1.000000 "/>
+  <deformer name="skinCluster1" type="skinCluster">
+    <attribute name="skinningMethod" type="enum" value="0"/>
+    <attribute name="maxInfluences" type="long" value="5"/>
+    <attribute name="normalizeWeights" type="enum" value="1"/>
+  </deformer>
+  <shape name="pPlaneShape1" group="0" stride="3" size="9" max="8">
+    <point index="0" value=" -0.500000 0.000000 0.500000"/>
+    <point index="1" value=" 0.000000 0.000000 0.500000"/>
+    <point index="2" value=" 0.500000 0.000000 0.500000"/>
+    <point index="3" value=" -0.500000 0.000000 0.000000"/>
+    <point index="4" value=" 0.000000 0.000000 0.000000"/>
+    <point index="5" value=" 0.500000 0.000000 0.000000"/>
+    <point index="6" value=" -0.500000 0.000000 -0.500000"/>
+    <point index="7" value=" 0.000000 0.000000 -0.500000"/>
+    <point index="8" value=" 0.500000 0.000000 -0.500000"/>
+    <polygonCounts size="4" polygonCounts="4 4 4 4 "/>
+    <polygonConnects size="16" polygonConnects="0 1 4 3 1 2 5 4 3 4 7 6 4 5 8 7 "/>
+  </shape>
+  <weights deformer="skinCluster1" source="joint1" shape="pPlaneShape1" layer="0" defaultValue="-1.000000" size="9" max="8">
+    <point index="0" value="0.775512"/>
+    <point index="1" value="1.000000"/>
+    <point index="2" value="0.775512"/>
+    <point index="3" value="0.445261"/>
+    <point index="4" value="0.500000"/>
+    <point index="5" value="0.445261"/>
+    <point index="6" value="0.111118"/>
+    <point index="7" value="0.000000"/>
+    <point index="8" value="0.111118"/>
+  </weights>
+  <weights deformer="skinCluster1" source="joint2" shape="pPlaneShape1" layer="1" defaultValue="-1.000000" size="9" max="8">
+    <point index="0" value="0.193878"/>
+    <point index="1" value="0.000000"/>
+    <point index="2" value="0.193878"/>
+    <point index="3" value="0.445261"/>
+    <point index="4" value="0.500000"/>
+    <point index="5" value="0.445261"/>
+    <point index="6" value="0.444472"/>
+    <point index="7" value="1.000000"/>
+    <point index="8" value="0.444472"/>
+  </weights>
+  <weights deformer="skinCluster1" source="joint3" shape="pPlaneShape1" layer="2" defaultValue="-1.000000" size="9" max="8">
+    <point index="0" value="0.030611"/>
+    <point index="1" value="0.000000"/>
+    <point index="2" value="0.030611"/>
+    <point index="3" value="0.109477"/>
+    <point index="4" value="0.000000"/>
+    <point index="5" value="0.109477"/>
+    <point index="6" value="0.444410"/>
+    <point index="7" value="0.000000"/>
+    <point index="8" value="0.444410"/>
+  </weights>
+</deformerWeight>

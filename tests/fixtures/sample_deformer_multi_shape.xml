@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<customDeformerWeight>
+    <headerInfo fileName="cluster_multi.xml"/>
+    <shape name="pSphereShape1" stride="3" size="2" max="2" worldMatrix="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
+    <shape name="pCubeShape1" stride="3" size="2" max="2" worldMatrix="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
+    <weights deformer="cluster1" source="baseLayer" shape="pSphereShape1" layer="0" defaultValue="-1.000" size="2" max="2">
+        <point index="0" value="1.0"/>
+        <point index="1" value="0.25"/>
+    </weights>
+    <weights deformer="cluster1" source="baseLayer" shape="pCubeShape1" layer="0" defaultValue="-1.000" size="2" max="2">
+        <point index="0" value="0.5"/>
+        <point index="1" value="0.75"/>
+    </weights>
+</customDeformerWeight>

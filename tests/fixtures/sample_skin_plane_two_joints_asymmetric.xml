@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<deformerWeight>
+  <headerInfo fileName="fmt_small.xml" worldMatrix="1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 1.000000 "/>
+  <deformer name="skinCluster1" type="skinCluster">
+    <attribute name="skinningMethod" type="enum" value="0"/>
+    <attribute name="maxInfluences" type="long" value="5"/>
+    <attribute name="normalizeWeights" type="enum" value="1"/>
+  </deformer>
+  <shape name="pPlaneShape1" group="0" stride="3" size="4" max="3">
+    <point index="0" value=" -0.500000 0.000000 0.500000"/>
+    <point index="1" value=" 0.500000 0.000000 0.500000"/>
+    <point index="2" value=" -0.500000 0.000000 -0.500000"/>
+    <point index="3" value=" 0.500000 0.000000 -0.500000"/>
+  </shape>
+  <weights deformer="skinCluster1" source="joint2" shape="pPlaneShape1" layer="0" defaultValue="0.000000" size="4" max="3">
+    <point index="0" value="0.900000"/>
+    <point index="1" value="0.700000"/>
+    <point index="2" value="0.900000"/>
+    <point index="3" value="0.900000"/>
+  </weights>
+  <weights deformer="skinCluster1" source="joint1" shape="pPlaneShape1" layer="1" defaultValue="0.000000" size="4" max="3">
+    <point index="0" value="0.100000"/>
+    <point index="1" value="0.300000"/>
+    <point index="2" value="0.100000"/>
+    <point index="3" value="0.100000"/>
+  </weights>
+</deformerWeight>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<deformerWeight>
+  <headerInfo fileName="body.xml"/>
+  <deformer name="body_blendShape" type="blendShape">
+    <attribute name="envelope" value="1"/>
+  </deformer>
+  <deformer name="body_skinCluster" type="skinCluster">
+    <attribute name="skinningMethod" value="0"/>
+    <attribute name="normalizeWeights" value="1"/>
+    <attribute name="maxInfluences" value="2"/>
+  </deformer>
+  <shape name="body_geoShape" size="3" max="3"/>
+  <weights deformer="body_blendShape" source="mouthOpenH" shape="body_geoShape">
+    <point index="0" value="1.0"/>
+    <point index="1" value="1.0"/>
+    <point index="2" value="1.0"/>
+  </weights>
+  <weights deformer="body_blendShape" source="mouthOpenV" shape="body_geoShape">
+    <point index="0" value="0.5"/>
+  </weights>
+  <weights deformer="body_skinCluster" source="joint_1" shape="body_geoShape">
+    <point index="0" value="1.0"/>
+    <point index="1" value="0.5"/>
+    <point index="2" value="1.0"/>
+  </weights>
+  <weights deformer="body_skinCluster" source="joint_2" shape="body_geoShape">
+    <point index="1" value="0.5"/>
+  </weights>
+</deformerWeight>

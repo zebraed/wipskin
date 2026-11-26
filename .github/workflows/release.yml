@@ -1,0 +1,231 @@
+name: Create GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  # Fail fast before any build when the tag and wipskin.__version__ disagree.
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check tag matches wipskin version
+        id: check
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          py_version="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' python/wipskin/core/constants.py)"
+          if [ "$tag_version" != "$py_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match __version__ $py_version (python/wipskin/core/constants.py)"
+            exit 1
+          fi
+          echo "version=$py_version" >> "$GITHUB_OUTPUT"
+
+  python-tests:
+    needs: version
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Bundled interpreters of Maya 2023 / 2024 / 2025-2026 / 2027.
+        python-version: ["3.9", "3.10", "3.11", "3.13"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install pytest
+        run: python -m pip install pytest
+
+      - name: Compile check
+        run: python -m compileall -q python/wipskin
+
+      - name: Run tests
+        run: python -m pytest tests -q
+
+  rust-tests:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # pyo3 links libpython for `cargo test` (no extension-module feature).
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run cargo test
+        working-directory: native
+        run: cargo test --release
+
+  build-native:
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-x64
+            os: windows-latest
+            target: x64
+            manylinux: ""
+            module: wipskin_native.pyd
+          # manylinux_2_28 (glibc 2.28): one .so for Rocky/RHEL 8 and 9,
+          # same base as native/Dockerfile.
+          - platform: linux-x86_64
+            os: ubuntu-latest
+            target: x86_64
+            manylinux: "2_28"
+            module: wipskin_native.so
+          # universal2 covers Apple Silicon Maya and Intel/Rosetta Maya.
+          - platform: macos-universal2
+            os: macos-latest
+            target: universal2-apple-darwin
+            manylinux: ""
+            module: wipskin_native.so
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          working-directory: native
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux }}
+          args: --release --out dist
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Same extraction as native/docker-build.sh: pull the extension module
+      # out of the wheel and store it under the name xml_accel imports.
+      - name: Extract extension module
+        run: |
+          mkdir -p native-out
+          python - <<'EOF'
+          import glob
+          import shutil
+          import zipfile
+
+          wheels = glob.glob("native/dist/wipskin_native-*.whl")
+          if len(wheels) != 1:
+              raise SystemExit(f"expected one wheel, found {wheels}")
+
+          with zipfile.ZipFile(wheels[0]) as wheel:
+              members = [
+                  name for name in wheel.namelist()
+                  if name.rsplit("/", 1)[-1].startswith("wipskin_native")
+                  and name.endswith((".pyd", ".so"))
+              ]
+              if len(members) != 1:
+                  raise SystemExit(f"expected one extension module, found {members}")
+
+              with wheel.open(members[0]) as src, open("native-out/${{ matrix.module }}", "wb") as dst:
+                  shutil.copyfileobj(src, dst)
+          EOF
+          ls -la native-out
+
+      - name: Test extension module
+        env:
+          PYTHONPATH: ${{ github.workspace }}/python/wipskin/_native
+        run: |
+          rm -f python/wipskin/_native/wipskin_native.*
+          cp "native-out/${{ matrix.module }}" python/wipskin/_native/
+          python -m pip install pytest
+          python -c "import wipskin_native; print(wipskin_native.__file__)"
+          python -m pytest tests/test_native.py tests/test_xml_accel.py -q
+
+      - name: Upload extension module
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.platform }}
+          path: native-out/${{ matrix.module }}
+          if-no-files-found: error
+
+  package:
+    needs: [version, python-tests, rust-tests, build-native]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-x64, linux-x86_64, macos-universal2]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download extension module
+        uses: actions/download-artifact@v4
+        with:
+          name: native-${{ matrix.platform }}
+          path: native-out
+
+      # Ship only what Maya loads: the wipskin package with this platform's
+      # binary, plus LICENSE and README. native/, tests/, scripts/ stay out.
+      - name: Assemble package
+        run: |
+          name="wipskin-${{ needs.version.outputs.version }}-${{ matrix.platform }}"
+          root="dist/$name"
+          mkdir -p "$root/python"
+          cp -r python/wipskin "$root/python/"
+          find "$root" -name "__pycache__" -type d -prune -exec rm -rf {} +
+          rm -f "$root/python/wipskin/_native/"wipskin_native.*
+          cp native-out/* "$root/python/wipskin/_native/"
+          cp LICENSE README.md "$root/"
+          (cd dist && zip -r -q "$name.zip" "$name")
+          ls -la dist
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.platform }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+  release:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: dist
+          merge-multiple: true
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          (cd dist && sha256sum *.zip > SHA256SUMS.txt)
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --generate-notes \
+            dist/*.zip dist/SHA256SUMS.txt

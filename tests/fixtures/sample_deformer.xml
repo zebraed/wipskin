@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<customDeformerWeight>
+    <headerInfo fileName="cluster1.xml"/>
+    <shape name="pSphereShape1" stride="3" size="100" max="100" worldMatrix="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
+    <weights deformer="cluster1" source="baseLayer" shape="pSphereShape1" layer="0" defaultValue="-1.000" size="100" max="100"/>
+</customDeformerWeight>
