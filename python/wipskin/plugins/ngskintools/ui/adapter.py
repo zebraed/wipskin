@@ -66,7 +66,7 @@ class NgSkinToolsFormatIO(SkinFormatIO):
                     skin_cluster = weights.get_skin_cluster(target)
                     if skin_cluster is None:
                         raise ValueError(
-                            tr("{node} has no skinCluster. Bind it first (XML / mGear).",
+                            tr("{node} has no skinCluster. Bind it first.",
                                node=target)
                         )
 
