@@ -184,7 +184,9 @@ jobs:
           path: native-out
 
       # Ship only what Maya loads: the wipskin package with this platform's
-      # binary, plus LICENSE and README. native/, tests/, scripts/ stay out.
+      # binary, plus LICENSE and both READMEs. Copies also sit inside the
+      # package, so they stay when python/wipskin is moved onto PYTHONPATH.
+      # native/, tests/, scripts/ stay out.
       - name: Assemble package
         run: |
           name="wipskin-${{ needs.version.outputs.version }}-${{ matrix.platform }}"
@@ -194,7 +196,8 @@ jobs:
           find "$root" -name "__pycache__" -type d -prune -exec rm -rf {} +
           rm -f "$root/python/wipskin/_native/"wipskin_native.*
           cp native-out/* "$root/python/wipskin/_native/"
-          cp LICENSE README.md "$root/"
+          cp LICENSE README.md README_JA.md "$root/"
+          cp LICENSE README.md README_JA.md "$root/python/wipskin/"
           (cd dist && zip -r -q "$name.zip" "$name")
           ls -la dist
 
